@@ -586,6 +586,7 @@ def killall():
 
 if __name__ == '__main__':
     # unbuffered output
+    assert os.path.exists('../executables'), "Make sure that the working directory is 'hwmcc24_submission/scripts'"
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', buffering=1)
     script_dir = os.path.dirname(os.path.realpath(__file__))
     os.environ['PATH'] = os.path.join(script_dir, '../executables') + os.pathsep + os.environ['PATH']

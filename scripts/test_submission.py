@@ -1,5 +1,6 @@
 import multiprocessing
 import os
+import subprocess
 from multiprocessing import Pool
 
 """
@@ -57,11 +58,16 @@ profiles = ['avymin', 'avysimp', 'navy', 'abcpdr', 'fib', 'kavy1', 'kavy2', 'kav
 def __custom_run_cmd(i_cmd: tuple[int, str]):
     i, cmd = i_cmd
     print(f"--- i = {i} RUNNING {cmd}")
-    proc = os.system(cmd)
-    assert False
-    # print(proc.stderr)
-    assert proc.returncode == 0
-    assert "AssertionError" not in proc.stderr
+    proc = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    is_error = proc.returncode != 0
+    is_error = is_error or "AssertionError" in proc.stderr
+    is_error = is_error or "AssertionError" in proc.stdout
+    if is_error:
+        m = f"Error when running command {cmd}"
+        print(m)
+        print(f"STDOUT:\n{proc.stdout}")
+        print(f"STDERR:\n{proc.stderr}")
+        raise Exception(m)
 
 
 def local_test():
@@ -70,7 +76,9 @@ def local_test():
     assert root.endswith("hwmcc24_submission")
     tests = list_all_aig_files(root=root)
     timeout_in_seconds = 10
-    threads_to_use = multiprocessing.cpu_count()
+    threads_to_use = 1 # multiprocessing.cpu_count()
+    time_of_test = 5 * 6
+    n = (time_of_test / timeout_in_seconds) * threads_to_use
     commands = []
 
     for i, test in enumerate(tests):
@@ -87,7 +95,12 @@ def local_test():
     shuffle(commands)
     commands = list(enumerate(commands))
     with Pool(threads_to_use) as p:
-        p.map(__custom_run_cmd, commands)
+        try:
+            list(p.imap_unordered(__custom_run_cmd, commands))
+        except Exception:
+            print("a worker failed, aborting...")
+            p.close()
+            p.terminate()
 
 
 """
