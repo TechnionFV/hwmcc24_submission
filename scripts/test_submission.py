@@ -79,7 +79,7 @@ def local_test():
     threads_to_use = 1 # multiprocessing.cpu_count()
     time_of_test_minutes = 5
     time_of_test_in_seconds = time_of_test_minutes * 60
-    n = (time_of_test_in_seconds / timeout_in_seconds) * threads_to_use
+    n = int((time_of_test_in_seconds / timeout_in_seconds) * threads_to_use)
     print(f"number of tests to run = {n}")
     commands = []
 
