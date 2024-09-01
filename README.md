@@ -4,14 +4,8 @@ Our submission for HWMCC24
 
 ## How to run?
 
-First add `./executables` to `PATH`:
 ```commandline
-export PATH=executables/:$PATH
-```
-
-Then the most direct way to run our submission is with the following command:
-```commandline
-python3 ./scripts/pavy.py <models>
+python3 ./scripts/pavy.py <model>
 ```
 This command will write the proof in `./certificate.aig` or
 `./certificate.aag` and the counterexample in `./cex`.
