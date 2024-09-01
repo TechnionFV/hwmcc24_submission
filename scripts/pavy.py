@@ -428,7 +428,7 @@ def check_certificate(model, cert):
     assert (False and "Unexpected output")
 
 def check_cex(model, cex):
-    cmd = f"{getCexChecker()} {model} {cex}"
+    cmd = f"{getCexChecker()} -w {model} {cex}"
     res, out = execute(cmd)
     if 'Trace is a witness for: { }' in out:
         print ("[pavy] Cex check failed")
