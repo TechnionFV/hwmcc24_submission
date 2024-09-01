@@ -229,7 +229,7 @@ def parseOpt(argv):
                       callback=list_profiles,
                       help='List all available profiles')
     parser.add_option('-p', '--profiles', type=str,
-                      default='avymin:avysimp:navy:abcpdr:fib:kavy1:kavy2:kavy3:Macallan:JohnnieWalker:Jameson:Glenlivet:RFVEV:RFV')
+                      default='avymin:avysimp:navy:abcpdr:fib:kavy1:kavy2:kavy3:Macallan:JohnnieWalker:Jameson:RFVEV:RFV')
     parser.add_option("--save-temps", dest="save_temps",
                       help="Do not delete temporary files",
                       action="store_true",
@@ -456,11 +456,11 @@ def report_winner(model, model_pp, code, engine, opt):
                         cex_aig=aig.parse(open(model_pp, 'rb')),
                         orig_aig=aig.parse(open(model, 'rb')),
                         out_cex=of(opt.cex))
-        if opt.check_witness: check_cex(model, opt.cex)
+        if opt.check_witness: assert (check_cex(model, opt.cex))
     elif code == 0:
         cert_name = add_cert_ext(cert_name, wcfg.binary_certificate())
         shutil.copy2(engine['cert'], cert_name)
-        if opt.check_witness: check_certificate(model, cert_name)
+        if opt.check_witness: assert (check_certificate(model, cert_name))
 
     if opt.verbose: print('[pavy] Witness end')
     print('Winner: ', wcfg.name)
@@ -587,7 +587,8 @@ def killall():
 if __name__ == '__main__':
     # unbuffered output
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', buffering=1)
-    os.environ['PATH'] = '.' + os.pathsep + os.environ['PATH']
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    os.environ['PATH'] = os.path.join(script_dir, '../executables') + os.pathsep + os.environ['PATH']
 
     try:
         signal.signal(signal.SIGTERM, lambda x, y: killall())
