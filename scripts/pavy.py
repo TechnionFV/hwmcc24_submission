@@ -396,6 +396,18 @@ def getRfv():
         raise IOError('Cannot find rfv')
     return f
 
+def getCertChecker():
+    f = which('check_cert')
+    if f is None:
+        raise IOError('Cannot find check_cert')
+    return f
+
+def getCexChecker():
+    f = which('check_cex')
+    if f is None:
+        raise IOError('Cannot find check_cex')
+    return f
+
 def execute (cmd):
     try:
         result = sub.run(cmd, check=True, shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
@@ -405,7 +417,7 @@ def execute (cmd):
         # pass
 
 def check_certificate(model, cert):
-    cmd = f"/home/basel.khouri/bin/certifaiger/build/check {model} {cert}"
+    cmd = f"{getCertChecker()} {model} {cert}"
     res, out = execute(cmd)
     if 'Error: Certificate check failed' in out:
         print ("[pavy] Certificate check failed")
@@ -416,7 +428,7 @@ def check_certificate(model, cert):
     assert (False and "Unexpected output")
 
 def check_cex(model, cex):
-    cmd = f"/home/basel.khouri/bin/certifaiger/build/aiger/aigsim -w {model} {cex}"
+    cmd = f"{getCexChecker()} {model} {cex}"
     res, out = execute(cmd)
     if 'Trace is a witness for: { }' in out:
         print ("[pavy] Cex check failed")
