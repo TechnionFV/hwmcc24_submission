@@ -397,16 +397,10 @@ def getRfv():
     return f
 
 def getCertChecker():
-    f = which('check_cert')
-    if f is None:
-        raise IOError('Cannot find check_cert')
-    return f
+    return './certifaiger/build/check'
 
 def getCexChecker():
-    f = which('check_cex')
-    if f is None:
-        raise IOError('Cannot find check_cex')
-    return f
+    return './certifaiger/build/aiger/aigsim'
 
 def execute (cmd):
     try:
