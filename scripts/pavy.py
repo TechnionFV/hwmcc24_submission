@@ -131,21 +131,21 @@ def profiles():
     reg_profile (AvyBmcConfig ('fib', [getAvyBmc(), '--opt-bmc', '--incr', '--glucose', '--depth=1000', '--glucose-inc-mode']))
 
     reg_profile (SolverCfg ('kavy1',
-                            [getAvy (), '--coi=1', '--incr=1', '--sat-simp=1',
+                            [getAvy (), '--coi=1', '--incr=1', '--sat-simp=1', '--tr0=1',
                              '--itp-simp=0', '--shallow-push=1', '--reset-cover=1',
                              '--glucose', '--glucose_itp', '--opt-bmc=0',
                              '--quip=0', '--commitAbs=0', '--lemma-abs=1',
                              '--kind-pol=1', '--suffixSA=1', '-a']))
 
     reg_profile (SolverCfg ('kavy2',
-                            [getAvy (), '--coi=1', '--incr=1', '--sat-simp=1',
+                            [getAvy (), '--coi=1', '--incr=1', '--sat-simp=1', '--tr0=1',
                              '--itp-simp=0', '--shallow-push=1', '--reset-cover=1',
                              '--glucose', '--glucose_itp', '--opt-bmc=0',
                              '--quip=0', '--commitAbs=0', '--lemma-abs=1',
                              '--kind-pol=2']))
 
     reg_profile (SolverCfg ('kavy3',
-                            [getAvy (), '--coi=1', '--incr=1', '--sat-simp=1',
+                            [getAvy (), '--coi=1', '--incr=1', '--sat-simp=1', '--tr0=1',
                              '--itp-simp=0', '--shallow-push=1', '--reset-cover=1',
                              '--glucose', '--glucose_itp', '--opt-bmc=0',
                              '--quip=0', '--commitAbs=0', '--lemma-abs=1',
