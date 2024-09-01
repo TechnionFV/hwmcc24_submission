@@ -77,8 +77,10 @@ def local_test():
     tests = list_all_aig_files(root=root)
     timeout_in_seconds = 10
     threads_to_use = 1 # multiprocessing.cpu_count()
-    time_of_test = 5 * 6
-    n = (time_of_test / timeout_in_seconds) * threads_to_use
+    time_of_test_minutes = 5
+    time_of_test_in_seconds = time_of_test_minutes * 60
+    n = (time_of_test_in_seconds / timeout_in_seconds) * threads_to_use
+    print(f"number of tests to run = {n}")
     commands = []
 
     for i, test in enumerate(tests):
@@ -94,13 +96,15 @@ def local_test():
     from random import shuffle
     shuffle(commands)
     commands = list(enumerate(commands))
+    commands = commands[:n]
     with Pool(threads_to_use) as p:
         try:
             list(p.imap_unordered(__custom_run_cmd, commands))
-        except Exception:
-            print("a worker failed, aborting...")
+        except Exception as e:
+            print(f"a worker failed, aborting...\nError: {e}")
             p.close()
             p.terminate()
+            raise e
 
 
 """
@@ -111,7 +115,9 @@ main
 
 
 def main():
+    print("Test start")
     local_test()
+    print("Test passed")
 
 
 if __name__ == "__main__":
