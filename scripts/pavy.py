@@ -557,7 +557,7 @@ def run(workdir, fname, profs, opt):
                 sys.exit(returnvalue // 256)
 
         print('[pavy] Winner: Unknown')
-        print('[pavy] Result: Undetermined')
+        print('[pavy] Result: UNDETERMINED')
 
     running[:] = []
     return exit_code
