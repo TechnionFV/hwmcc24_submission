@@ -123,7 +123,7 @@ def profiles():
                             [getAvy (), '--reset-cover=1', '--opt-bmc=1',
                              '--kstep=1',
                              '--shallow-push=1', '--min-suffix=1', '--incr=1',
-                             '--glucose', '--glucose-inc-mode=0',
+                             '--glucose', '--glucose-inc-mode=0', '--tr0=1',
                              '--sat-simp=0', '--glucose_itp=1']))
 
     reg_profile (SolverCfg ('abcpdr', [getAbcPdr()]))
