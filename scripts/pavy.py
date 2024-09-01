@@ -397,10 +397,10 @@ def getRfv():
     return f
 
 def getCertChecker():
-    return './certifaiger/build/check'
+    return os.path.join(script_dir, '../certifaiger/build/check')
 
 def getCexChecker():
-    return './certifaiger/build/aiger/aigsim'
+    return os.path.join(script_dir, '../certifaiger/build/aiger/aigsim')
 
 def execute (cmd):
     try:
