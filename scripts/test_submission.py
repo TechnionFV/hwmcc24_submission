@@ -63,10 +63,7 @@ def __custom_run_cmd(i_cmd: tuple[int, str]):
     is_error = is_error or "AssertionError" in proc.stderr
     is_error = is_error or "AssertionError" in proc.stdout
     if is_error:
-        m = f"Error when running command {cmd}"
-        print(m)
-        print(f"STDOUT:\n{proc.stdout}")
-        print(f"STDERR:\n{proc.stderr}")
+        m = f"Error when running command {cmd}\nSTDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}"
         raise Exception(m)
 
 
@@ -101,7 +98,7 @@ def local_test():
         try:
             list(p.imap_unordered(__custom_run_cmd, commands))
         except Exception as e:
-            print(f"a worker failed, aborting...\nError: {e}")
+            print(f"a worker failed, aborting...")
             p.close()
             p.terminate()
             raise e
