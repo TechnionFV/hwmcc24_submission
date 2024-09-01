@@ -8,6 +8,8 @@ The easiest way to run our submission is with the following command:
 ```commandline
 python3 ./scripts/pavy.py <models>
 ```
+This command will write the prrof in `./certificate.aig` and the counterexample in `./cex`
+
 
 Examples:
 ```commandline
