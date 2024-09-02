@@ -229,7 +229,7 @@ def parseOpt(argv):
                       callback=list_profiles,
                       help='(INTERNAL USE ONLY) List all available profiles')
     parser.add_option('-p', '--profiles', type=str,
-                      default='(INTERNAL USE ONLY) avymin:avysimp:navy:abcpdr:fib:kavy1:kavy2:kavy3:Macallan:JohnnieWalker:Jameson:RFVEV:RFV', help='Colon separated list of profiles to run')
+                      default='avymin:avysimp:navy:abcpdr:fib:kavy1:kavy2:kavy3:Macallan:JohnnieWalker:Jameson:RFVEV:RFV', help='Colon separated list of profiles to run')
     parser.add_option("--save-temps", dest="save_temps",
                       help="Do not delete the temporary directory holding intermediate files",
                       action="store_true",
