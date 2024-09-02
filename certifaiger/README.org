@@ -1,0 +1,105 @@
+* Certifaiger
+#+html: <img src="logo.png" width="300px" align="right"/>
+[[https://github.com/Froleyks/certifaiger][Certifaiger]] checks the correctness of witnesses circuits in [[https://github.com/arminbiere/aiger][AIGER]].
+
+** Quickstart
+
+#+begin_src bash
+git clone https://github.com/Froleyks/certifaiger
+cd certifaiger && make
+# if resets are not stratified: make qbf
+./build/check examples/01_model.aag examples/06_witness.aag
+#+end_src
+
+Checkout the step-by-step [[https://github.com/Froleyks/certifaiger/blob/main/examples][example]].
+
+The [[https://github.com/Froleyks/certifaiger/blob/main/scripts/README.org][scripts]] directory provides examples of further use.
+** Motivation
+Model checking is an essential technique for hardware design.
+For unsafe circuits, those that violate the property being checked, it is usually easy to produce a trace to demonstrate the flaw.
+In cases where the model checking succeeds, a certificate should be produced that proves the property indeed holds for all possible traces.
+We propose /witness circuits/ as a format for these certificates.
+A witness circuit generalizes the concept of an inductive invariant.
+
+Instead of searching for an inductive invariant in the model itself, we find a different circuit -- the witness -- that simulates part of the model and has an inductive invariant.
+** Witness circuits
+To check if a witness circuit is valid for a given model, Certifaiger performs five checks.
+For an AIGER circuit $C$ we use
+$R(L), F(L, \hat{L}), P(I, L)$
+to refer to the symbolic formulas encoding that:
+- The latches in $L$ are in their reset.
+- The latches in $\hat{L}$ are equal to the /next/ of the matching latch in $L$.
+- The property holds on the inputs and latches in $I \cup L$, i.e. the /bad/ or /output/ is not set.
+
+These formulas can be encoded as combinatorial AIGER circuits by replacing latches with inputs, resulting in a DAG with a single output and leaves ending in inputs or constants.
+
+Note that we use a (slightly) modified version of the AIGER 1.9 format.
+Our witness circuits may require the use of /reset functions/,
+that is, latches may be reset to other latches or gates,
+instead of just constants (or stay uninitialized).
+
+For a model $C$ and witness circuit $C'$,
+let $R, F, P, I, L$ and their primed version be the formulas from above and the set of all inputs and latches in the respective circuit,
+$M$ is the intersection of latches and inputs between the two.
+The five checks are:
+| Reset      | $R(M) \Rightarrow R'(M)$                               |
+| Transition | $F(M,\hat{M}) \Rightarrow F'(M,\hat{M})$               |
+| Property   | $P'(I',L') \Rightarrow P(I,L)$                         |
+| Base       | $R'(L') \Rightarrow P'(I',L')$                         |
+| Step       | $(P'(L') \wedge F'(L', \hat{L'})) \Rightarrow P'(\hat{L'})$ |
+
+For a witness and model that pass the first three checks, the witness is said to simulate the model.
+The last two check the inductiveness of the property in the witness circuit.
+
+The validity of these formulas is checked by encoding their negation into combinatorial circuits, translated to CNF using [[https://github.com/arminbiere/aiger][aigtocnf]], and checking unsatisfiability with [[https://github.com/arminbiere/kissat][Kissat]] or any other SAT solver.
+The produced certificates of unsatisfiability may additionally be checked by a [[https://satcompetition.github.io/2023/downloads/proposals/drat_dpr.pdf][verified proof checker]].
+The entire certificate check is coNP in the size of the circuits.
+** Stratification
+A circuit is said to be stratified if the syntactic dependency graph induced by its reset function is acyclic.
+This is usually not a big restriction and fairly common in practice.
+Since in the original AIGER format latches can only be reset to constants, stratification is trivial.
+The /semantic dependency graph/ is the subset of the syntactic dependency graph,
+where an edge $(a, b)$ indicates that
+an assignment exists where a change in $b$ would imply a change in $a$.
+
+In case both circuits are stratified,
+the Reset check above ensures that the set $M$ is at the bottom of the semantic dependency graph of either circuit,
+i.e., the reset of the latches in $M$ depends only on $M$.
+It follows that any reset of $M$ can be extended to a reset of $L$ and $L'$.
+
+If either circuit is not stratified, it is not guaranteed that a partial reset can be extended.
+Therefore, Certifaiger implements the stronger check Reset^{\exists} if the polynomial stratification test fails.
+| Reset^{\exists} | $R(L) \Rightarrow \exist(L' \setminus L): R'(L')$ |
+The explicit quantifier is necessary as otherwise every extension to $L'$ of a reset in $C$ (reduced to $M$) would need to be a valid reset in $C'$.
+This very strong condition would be unlikely to hold if $C'$ introduces any additional latches.
+Since the formula is checked for validity, we have the quantifier alternation \exists\forall when encoding Reset^{\exists} and are no longer in coNP.
+In practice, Certifaiger encodes Reset^{\exists} as a [[https://github.com/ltentrup/quabs][QAIGER]] circuit which is then translated to QCIR and checked with [[https://github.com/ltentrup/quabs][QuAbS]].
+Certifaiger will pick the appropriate Reset check without further interaction; however, note that the tool will return exit code 15 if a QAIGER formula was produced.
+See [[https://github.com/Froleyks/certifaiger/blob/main/check_certificate.sh][check_certificate.sh]] for more details.
+** Witness Format
+Witness circuits are normal AIGER circuits in either ASCII or binary format.
+
+Both the Reset and Transition checks are defined on the set of intersecting inputs and latches $M$.
+Requiring the witness circuit to keep the same variable indexing for $M$ would lead to gaps in the variable indexing.
+This, in turn, would prohibit storing the witness in the binary format since it requires the inputs and latches to be indexed consecutively before any gate.
+Instead, the witness can store an explicit mapping of its inputs and latches to the simulated literals in the model in its symbol table.
+Other information may be stored, but for elements of $M$ the /name/ must start with '=' followed by the simulated literal in the model.
+#+begin_example
+l0 = 2
+l1 = 4
+c
+WITNESS o0 model.aig shasum 9f1747da5a7dd981c9dac13f4077c8e31c9ce50d
+#+end_example
+To allow the translation between the two formats without breaking the mapping, Certifaiger enforces that the inputs and latches are indexed consecutively even in the ASCII format.
+
+While not required it is recommended to include a comment starting with 'WITNESS' followed by the property being certified and the name of the model file. Additionally, a hash may be included.
+
+If no mapping information is found, Certifaiger assumes that all inputs and latches of the model are mapped to the same indices in the witness and the first bad or in absence the first output is certified.
+Checkout the [[https://github.com/Froleyks/certifaiger/blob/main/examples][examples]] directory.
+** References
+The theory this tool is based on is detailed in our papers.
+Beyond that, we demonstrate how to certify the combination of different preprocessing techniques and model checking algorithms with witness circuits.
+| Progress in Certifying Hardware Model Checking Results      | Yu, Biere & Heljanko        | CAV21   |
+| Stratified Certification for K-Induction                    | Yu, Froleyks & Biere et al. | FMCAD22 |
+| Towards Compositional Hardware Model Checking Certification | Yu, Froleyks & Biere et al. | FMCAD23 |
+| Certifying Phase Abstraction                                | Froleyks, Yu & Biere et al. | IJCAR24 |
