@@ -223,42 +223,42 @@ def list_profiles(option, opt_str, value, parser):
 
 def parseOpt(argv):
     from optparse import OptionParser
-    
+
     parser = OptionParser()
     parser.add_option('--list-profiles', action="callback",
                       callback=list_profiles,
-                      help='List all available profiles')
+                      help='(INTERNAL USE ONLY) List all available profiles')
     parser.add_option('-p', '--profiles', type=str,
-                      default='avymin:avysimp:navy:abcpdr:fib:kavy1:kavy2:kavy3:Macallan:JohnnieWalker:Jameson:RFVEV:RFV')
+                      default='(INTERNAL USE ONLY) avymin:avysimp:navy:abcpdr:fib:kavy1:kavy2:kavy3:Macallan:JohnnieWalker:Jameson:RFVEV:RFV', help='Colon separated list of profiles to run')
     parser.add_option("--save-temps", dest="save_temps",
-                      help="Do not delete temporary files",
+                      help="Do not delete the temporary directory holding intermediate files",
                       action="store_true",
                       default=False)
     parser.add_option("--verbose", dest="verbose",
                       action="store_true",
-                      default=False)
+                      default=False, help="(INTERNAL USE ONLY) Print verbose output")
     parser.add_option("--temp-dir", dest="temp_dir",
-                      help="Temporary directory",
+                      help="Temporary directory to store intermediate files",
                       default=None)
     parser.add_option('--pp-cpu', dest='pp_cpu',
-                      help='CPU time limit (seconds) for pre-processing',
+                      help='(INTERNAL USE ONLY) CPU time limit (seconds) for pre-processing',
                       type=int, default=120)
-    parser.add_option('--cex', type=str, default='cex')
-    parser.add_option('--certificate', type=str, default='certificate')
+    parser.add_option('--cex', type=str, default='cex', help='Counterexample filename')
+    parser.add_option('--certificate', type=str, default='certificate', help='Certificate filename without extension (extension will be added based on the solver)')
     parser.add_option("--check-witness", dest="check_witness",
                       action="store_true",
-                      default=False)
+                      default=False, help="(INTERNAL USE ONLY) verify the witness")
     parser.add_option("--exit-on-error", dest="exit_on_error",
                       action="store_true",
-                      default=False)
+                      default=False, help="(INTERNAL USE ONLY) exit if some engine crashes")
     parser.add_option("--dedicated", dest="dedicated",
                       action="store_true",
-                      default=False)
+                      default=False, help="(INTERNAL USE ONLY) run each engine on a dedicated core")
     parser.add_option('--cpu', type='int', dest='cpu',
-                      help='CPU time limit (seconds) TEMP: has no effect',
+                      help='(INTERNAL USE ONLY) CPU time limit (seconds) TEMP: has no effect',
                       default=-1)
     parser.add_option('--mem', type='int', dest='mem',
-                      help='MEM limit (MB) TEMP: has no effect', default=-1)
+                      help='(INTERNAL USE ONLY) MEM limit (MB) TEMP: has no effect', default=-1)
 
     (options, args) = parser.parse_args(argv)
 
