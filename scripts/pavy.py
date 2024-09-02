@@ -124,7 +124,7 @@ def profiles():
                              '--kstep=1',
                              '--shallow-push=1', '--min-suffix=1', '--incr=1',
                              '--glucose', '--glucose-inc-mode=0', '--tr0=1',
-                             '--sat-simp=0', '--glucose_itp=1']))
+                             '--sat-simp=1', '--glucose_itp=1']))
 
     reg_profile (SolverCfg ('abcpdr', [getAbcPdr()]))
 
@@ -229,7 +229,7 @@ def parseOpt(argv):
                       callback=list_profiles,
                       help='(INTERNAL USE ONLY) List all available profiles')
     parser.add_option('-p', '--profiles', type=str,
-                      default='avymin:navy:abcpdr:fib:kavy1:kavy3:Macallan:JohnnieWalker:Jameson:RFVEV:RFV', help='Colon separated list of profiles to run')
+                      default='navy:abcpdr:fib:kavy1:kavy3:Macallan:JohnnieWalker:Jameson:RFVEV:RFV', help='Colon separated list of profiles to run')
     parser.add_option("--save-temps", dest="save_temps",
                       help="Do not delete the temporary directory holding intermediate files",
                       action="store_true",
