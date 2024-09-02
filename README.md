@@ -41,6 +41,7 @@ You can specify a custom name for the certificate or counterexample by using the
 
 # Submitters
 
+* Prof. Arie Gurfinkel
 * Dr. Yakir Vizel
 * Basel Khouri
 * Andrew Luka
