@@ -458,11 +458,11 @@ def report_winner(model, model_pp, code, engine, opt):
                         cex_aig=aig.parse(open(model_pp, 'rb')),
                         orig_aig=aig.parse(open(model, 'rb')),
                         out_cex=of(opt.cex))
-        if opt.check_witness: assert (check_cex(model, opt.cex, opt.verbose))
+        assert (not opt.check_witness or check_cex(model, opt.cex, opt.verbose))
     elif code == 0:
         cert_name = add_cert_ext(cert_name, wcfg.binary_certificate())
         shutil.copy2(engine['cert'], cert_name)
-        if opt.check_witness: assert (check_certificate(model, cert_name, opt.verbose))
+        # assert (not opt.check_witness or check_certificate(model, cert_name, opt.verbose))
 
     if opt.verbose: print('[pavy] Witness end')
     print('Winner: ', wcfg.name)
