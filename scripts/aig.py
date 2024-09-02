@@ -56,6 +56,7 @@ def parse(input):
     init = list()
     for i in range(ntk.regSz):
         reg = next(input).split()
+        reg = [chunk.decode('utf-8') for chunk in reg]
         if len(reg) == 1:
             init.append(0)
         elif reg[1] == '0' or reg[1] == '1':
@@ -69,10 +70,10 @@ def parse(input):
 
 def adjust_cex(in_cex, cex_aig, orig_aig, out_cex):
     res = next(in_cex)
-    out_cex.write(res)
+    out_cex.write (res)
 
     prop = next(in_cex)
-    out_cex.write(prop)
+    out_cex.write (prop)
 
     out_cex.flush()
     # adjust if cex aig has more inputs
@@ -83,27 +84,30 @@ def adjust_cex(in_cex, cex_aig, orig_aig, out_cex):
     # original ntk
     init = next(in_cex)
     # all cex_aig latches are initialized
-    assert (len(init.strip()) == cex_aig.regSz)
+    assert (len (init.strip ()) == cex_aig.regSz)
 
     if adjust:
         # the initial value of the extra inputs is the initial value
         # of the latches
-        init = next(in_cex).strip()
+        init = next (in_cex).strip ()
         # additional inputs are the initial values of the dc latches
-        dc = iter(init[orig_aig.inSz:])
-        orig = iter(init[0:orig_aig.inSz])
+        dc = (init[orig_aig.inSz:])
+    orig = iter(init[0:orig_aig.inSz])
 
-    for i in range(orig_aig.regSz):
-        v = orig_aig.init[i]
+    j = 0
+
+    for i in range (0, orig_aig.regSz):
+        v = orig_aig.init [i]
         if v == 2:
             assert (adjust)
-            v = next(dc)
-        out_cex.write(str(v))
-    out_cex.write('\n')
+            v = dc[j]
+            j += 1
+        out_cex.write (str (v))
+    out_cex.write ('\n')
 
     if adjust:
         out_cex.write(init[0:orig_aig.inSz])
-        out_cex.write('\n')
+    out_cex.write('\n')
 
     for line in in_cex:
         if not adjust or len(line.strip()) != cex_aig.inSz:

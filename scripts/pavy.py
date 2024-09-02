@@ -311,7 +311,7 @@ def runPP(workdir, in_name, cpu=-1, verbose=False):
     abc_exec_cmd = '-c' if verbose else '-q'
     abc_args = [getAbc(),
                 abc_exec_cmd,
-                '&r {x} ; &dc2; &fraig ; &put; write_aiger {y}'.format(x=in_name,
+                '&r {x}; &put; fold; &get; &dc2; &fraig -C 1000; &put; write_aiger {y}'.format(x=in_name,
                                                                    y=out_name)]
     if verbose: print('[pavy]', ' '.join(abc_args))
 
@@ -410,8 +410,9 @@ def execute (cmd):
         return False, e.stdout.decode()
         # pass
 
-def check_certificate(model, cert):
+def check_certificate(model, cert, verbose):
     cmd = f"{getCertChecker()} {model} {cert}"
+    if verbose: print('[pavy] checking certificate with', cmd)
     res, out = execute(cmd)
     if 'Error: Certificate check failed' in out:
         print ("[pavy] Certificate check failed")
@@ -421,8 +422,9 @@ def check_certificate(model, cert):
         return True
     assert (False and "Unexpected output")
 
-def check_cex(model, cex):
+def check_cex(model, cex, verbose):
     cmd = f"{getCexChecker()} -w {model} {cex}"
+    if verbose: print('[pavy] checking cex with', cmd)
     res, out = execute(cmd)
     if 'Trace is a witness for: { }' in out:
         print ("[pavy] Cex check failed")
@@ -456,11 +458,11 @@ def report_winner(model, model_pp, code, engine, opt):
                         cex_aig=aig.parse(open(model_pp, 'rb')),
                         orig_aig=aig.parse(open(model, 'rb')),
                         out_cex=of(opt.cex))
-        if opt.check_witness: assert (check_cex(model, opt.cex))
+        if opt.check_witness: assert (check_cex(model, opt.cex, opt.verbose))
     elif code == 0:
         cert_name = add_cert_ext(cert_name, wcfg.binary_certificate())
         shutil.copy2(engine['cert'], cert_name)
-        if opt.check_witness: assert (check_certificate(model, cert_name))
+        if opt.check_witness: assert (check_certificate(model, cert_name, opt.verbose))
 
     if opt.verbose: print('[pavy] Witness end')
     print('Winner: ', wcfg.name)
