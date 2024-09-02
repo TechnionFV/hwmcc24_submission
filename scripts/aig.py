@@ -107,7 +107,7 @@ def adjust_cex(in_cex, cex_aig, orig_aig, out_cex):
 
     if adjust:
         out_cex.write(init[0:orig_aig.inSz])
-    out_cex.write('\n')
+        out_cex.write('\n')
 
     for line in in_cex:
         if not adjust or len(line.strip()) != cex_aig.inSz:

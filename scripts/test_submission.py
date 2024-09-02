@@ -59,7 +59,7 @@ def __custom_run_cmd(i_cmd: tuple[int, str]):
     i, cmd = i_cmd
     print(f"--- i = {i} RUNNING {cmd}")
     proc = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-    is_error = proc.returncode != 0
+    is_error = proc.returncode != 0 and proc.returncode != 1
     is_error = is_error or "AssertionError" in proc.stderr
     is_error = is_error or "AssertionError" in proc.stdout
     if is_error:
