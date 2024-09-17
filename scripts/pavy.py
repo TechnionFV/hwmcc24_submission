@@ -63,13 +63,14 @@ class RfvConfig(SolverCfg):
     def append_arg(self, arg): self._cmd.append(arg)
 
     def set_witness_output(self, cex, cert):
-        self.append_arg('--cex')
+        self.append_arg('--counterexample')
         self.append_arg(cex)
         self.append_arg('--certificate')
         self.append_arg(cert)
 
     def verbose(self, level):
         self.append_arg(f'--verbose')
+        self.append_arg(f'on')
 
     def set_time_limit(self, arg): self._cpu = arg
     def set_memory_limit(self, arg): self._mem = arg
@@ -77,7 +78,7 @@ class RfvConfig(SolverCfg):
     def __str__(self):
         return '[' + self.name + '] ' + ' '.join(self.cmd)
 
-    def binary_certificate(self): return False
+    def binary_certificate(self): return True
 
 class AvyBmcConfig(SolverCfg):
     def __init__(self, name, cmd, cpu=-1, mem=-1):
@@ -211,9 +212,8 @@ def profiles():
                             '--cadical_itp_minimize=0',
                             '--cadical_itp_minimizer_inprocessing=1']))
 
-    reg_profile(RfvConfig('RFVEV', [getRfv(), '-e']))
-
-    reg_profile(RfvConfig('RFV', [getRfv()]))
+    reg_profile(RfvConfig('RFVEV', [getRfv(), '--extension-variables', 'on', '--lic', 'on']))
+    reg_profile(RfvConfig('RFV', [getRfv(), '--extension-variables', 'off', '--lic', 'on']))
     return profs
 
 def list_profiles(option, opt_str, value, parser):
