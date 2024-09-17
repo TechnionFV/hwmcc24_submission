@@ -73,7 +73,7 @@ def local_test():
     assert root.endswith("hwmcc24_submission")
     tests = list_all_aig_files(root=root)
     timeout_in_seconds = 10
-    threads_to_use = 1 # multiprocessing.cpu_count()
+    threads_to_use = multiprocessing.cpu_count()
     assert 0 < threads_to_use
     time_of_test_minutes = 5
     time_of_test_in_seconds = time_of_test_minutes * 60
