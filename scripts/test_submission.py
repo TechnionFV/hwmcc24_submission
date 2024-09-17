@@ -86,7 +86,7 @@ def local_test():
             w = f"/tmp/{profile}_witnesses"
             if not os.path.exists(w):
                 os.mkdir(w)
-            command = f"python3 {root}/scripts/pavy.py --certificate={w}/cert_{i} --cex={w}/cex_{i} {test} --cpu {timeout_in_seconds} --check -p {profile}"
+            command = f"python3 {root}/scripts/pavy.py --verbose --certificate={w}/cert_{i} --cex={w}/cex_{i} {test} --cpu {timeout_in_seconds} -p {profile}"
             commands += [command]
 
     os.environ['PATH'] = f'{root}/executables/' + os.pathsep + os.environ['PATH']
